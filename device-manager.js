@@ -16,6 +16,7 @@ module.exports = class DeviceManager {
         this.getConnectedAndroidDevices().forEach(udid => {
             var androidDevice = 
             {
+                udid: udid,
                 name: this.getAndroidName(udid).split(/\r?\n/)[0],
                 version: this.getAndroidVersion(udid).split(/\r?\n/)[0],
                 platvorm: "Android"
