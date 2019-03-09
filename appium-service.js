@@ -1,8 +1,11 @@
 const PortManager = require('./port-manager')
-const { spawn } = require('child_process')
 var sessionstorage = require('sessionstorage');
+var shell = require('shelljs');
+const fs = require('fs');
 
 const portManager = new PortManager();
+
+const appiumSessions = [];
 
 module.exports = class AppiumService {
     
@@ -17,18 +20,23 @@ module.exports = class AppiumService {
             portManager.findAvailablePort()
             .then(freePort => {
                 console.log("Found port: " + freePort)
-                let command = 'appium';
-                let args = ['-p', freePort, '--default-capabilities', JSON.stringify({
-                newCommandTimeout: 180, clearSystemFiles: true,
-                })];
-        
                 port = freePort
-                spawn( command, args, { detached:true })
+                var child = shell.exec('appium -p ' + port, {async:true});
+                
+                var sessionInfo = {
+                    port: port,
+                    proccess: child,
+                    logPath: ""
+                }
+
+               appiumSessions.push(sessionInfo)
+
+                child.stdout.on('data', function(data) {
+                    console.log(port + " : " + data.toString()); 
+                });
             })
             .then(() => {
                 portManager.waitPort(port)
-                .then(() => portManager.findProcessId(port))
-                .then(pid => {sessionstorage.setItem(port, {proccessId: pid})})
                 .then(() => resolve(port))
             })
             
@@ -39,11 +47,20 @@ module.exports = class AppiumService {
     Terminate Appium process
     */
     terminateAppium(port) {
-        return new Promise((resolve, reject) => {
-            portManager.findProcessId(port).then(processVariable => {
-                portManager.terminateProcess(processVariable.pid)
-            })
+        var singleSession = appiumSessions.find(function(session) {
+            return session.port == port;
         });
+        singleSession.proccess.kill();
     }
 
+    /*
+    Returns live sessions
+    */
+    getAllSessions() {
+        return appiumSessions.filter(session => !session.proccess.killed);
+    }
+    
+    checkStaleSessions() {
+        appiumSessions = appiumSessions.filter(session => !session.proccess.killed);
+    }
  }

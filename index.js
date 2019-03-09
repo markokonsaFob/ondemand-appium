@@ -10,11 +10,6 @@ const appiumService = new AppiumService();
 
 app.use(bodyParser.json());
 
-app.all('**', function (req, res, next) {
-    console.log('All requests should come from here...')
-    next() // pass control to the next handler
-  })
-
 app.post('/wd/hub/session', function (req, res) {
     console.log("Create session called...")
     appiumService.startAppium().then(target => {
@@ -63,5 +58,9 @@ app.delete('/wd/hub/session/:session_id', proxy({
       res.end(err.message);
     }
 }));
+
+app.get('/sessions', function (req, res) {
+  res.send(JSON.stringify(appiumService.getAllSessions()))
+})
 
 app.listen(port, () => console.log(`Appium On-Demand Service listening on port ${port}!`))
