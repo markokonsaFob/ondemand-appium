@@ -10,6 +10,7 @@
     "delay": "^2.0.0",
     "detect-port": "^1.1.2",
     "express": "^4.15.2",
+    "find-process": "^1.2.1",
     "http-proxy-middleware": "^0.17.4",
     "moment": "^2.18.1",
     "ps-node": "^0.1.6",
