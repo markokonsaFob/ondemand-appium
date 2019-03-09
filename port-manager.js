@@ -9,11 +9,13 @@ module.exports = class PortManager{
 	Find available port
 	*/
 	findAvailablePort() {
-		return findFreePort(4000)
-			.then(freePort => {
-			console.log(freePort)
-				return freePort
-			})
+		return new Promise((resolve, reject) => {
+			return findFreePort(4000)
+				.then(freePort => {
+					resolve(freePort)
+				})
+				.catch(err => reject(err))
+		})
 	}
 
 

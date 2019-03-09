@@ -1,39 +1,46 @@
 const app = require('express')();
 const proxy = require('http-proxy-middleware');
-const shell = require('shelljs');
+const AppiumService = require('./appium-service')
 const port = 4723
+const request = require('request');
+const bodyParser = require('body-parser');
+var sessionstorage = require('sessionstorage');
 
-app.post('/wd/hub/session', proxy({
-  target: 'http://127.0.0.1',
-  changeOrigin: true,
-  logLevel: 'silent',
-  router: request => {
-        /*
-            1. Find available port
-            2. Start Appium service on given port
-            3. Save given port together with Session-ID
-            4. Return response to the Client
+const appiumService = new AppiumService();
 
-            EXAMPLE OF STARTING APPIUM:
-            shell.exec('appium -p 4444')
-        */
-  },
-  onError: (err, req, res) => {
-    console.log("Appium reqest error: " + err.message)
-    res.end(err.message);
-  }
-}));
+app.use(bodyParser.json());
+
+app.all('**', function (req, res, next) {
+    console.log('All requests should come from here...')
+    next() // pass control to the next handler
+  })
+
+app.post('/wd/hub/session', function (req, res) {
+    console.log("Create session called...")
+    appiumService.startAppium().then(target => {
+        request.post(
+            "http://127.0.0.1:"+target + '/wd/hub/session',
+            { json: req.body },
+            function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    sessionstorage.setItem(response.body.sessionId, {port: target, body: body})
+               } else {
+                    console.log("Create session failed cause: " + body.value.message)
+               }
+               res.status(response.statusCode).send(body)
+            }
+        );
+    })
+  })
 
 app.all('/wd/hub/session/:session_id/**', proxy({
     target: 'http://127.0.0.1',
     changeOrigin: true,
     logLevel: 'silent',
     router: request => {
-          /*
-              1. Find port for given session_id parameter
-              2. Proxy reuqest to right port
-              3. Return response to the Client
-          */
+        console.log("Action perform called...")
+        var session = sessionStorage.getItem(req.param.session_id)
+        return "http:/127.0.0.1:" + session.port
     },
     onError: (err, req, res) => {
       console.log("Appium reqest error: " + err.message)
@@ -46,22 +53,15 @@ app.delete('/wd/hub/session/:session_id', proxy({
     changeOrigin: true,
     logLevel: 'silent',
     router: request => {
-          /*
-              1. Find port for given session_id parameter
-              2. Proxy reuqest to right port
-              3. Return response to the Client
-              4. Terminate Appium service on given Port
-          */
+        console.log("Delete session called...")
+        var session = sessionStorage.getItem(req.param.session_id)
+        sessionStorage.removeItem(req.param.session_id)
+        return "http:/127.0.0.1:" + session.port
     },
     onError: (err, req, res) => {
       console.log("Appium reqest error: " + err.message)
       res.end(err.message);
     }
 }));
-
-app.use(haltOnTimedout);
-function haltOnTimedout(req, res, next) {
-  if (!req.timedout) next();
-}
 
 app.listen(port, () => console.log(`Appium On-Demand Service listening on port ${port}!`))
