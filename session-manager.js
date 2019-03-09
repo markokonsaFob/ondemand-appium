@@ -8,7 +8,10 @@ module.exports = class SessionManager {
     Start Appium service on specified port
     */
     startAppium(port) {
+        console.log("Starting Appium service for " + port)
         shell.exec(`appium -p ${port}`)
+
+        // Wait for port to become live
     }
 
     /*
