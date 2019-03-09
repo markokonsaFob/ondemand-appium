@@ -1,0 +1,26 @@
+{
+  "author": "FOB Solutions",
+  "name": "cify-device-farm",
+  "version": "2.0.0",
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "connect-timeout": "^1.8.0",
+    "delay": "^2.0.0",
+    "detect-port": "^1.1.2",
+    "express": "^4.15.2",
+    "http-proxy-middleware": "^0.17.4",
+    "moment": "^2.18.1",
+    "ps-node": "^0.1.6",
+    "terminate": "^2.1.0",
+    "tree-kill": "^1.1.0",
+    "wait-for-port": "0.0.2",
+    "webdriver-manager": "^12.1.0"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-google": "^0.7.1"
+  }
+}
