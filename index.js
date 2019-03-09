@@ -5,7 +5,9 @@ const port = 4723
 const request = require('request');
 const bodyParser = require('body-parser');
 var sessionstorage = require('sessionstorage');
+const DeviceManager = require("./device-manager")
 
+const devicemanager = new DeviceManager();
 const appiumService = new AppiumService();
 
 app.use(bodyParser.json());
@@ -61,6 +63,10 @@ app.delete('/wd/hub/session/:session_id', proxy({
 
 app.get('/sessions', function (req, res) {
   res.send(JSON.stringify(appiumService.getAllSessions()))
+})
+
+app.get('/devices', function (req, res) {
+  res.send(JSON.stringify(devicemanager.getDevices()))
 })
 
 app.listen(port, () => console.log(`Appium On-Demand Service listening on port ${port}!`))
