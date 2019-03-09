@@ -21,7 +21,7 @@ POST request in made for creating new Appium session.
 4. Service remembers the given port for Session-ID
 5. Service returns valid Appium request to end-user.
 
-### DELETE wd/hub/session
+### DELETE wd/hub/session/:session_id
 DELETE request is made for deleting Appium service.
 
 1. User sends correct Appium DELETE request to On-Demand Service
@@ -30,7 +30,7 @@ DELETE request is made for deleting Appium service.
 4. Appium closes the session
 5. Service responds to the Client & Closes Appium service on given port
 
-### Different actions wd/hub/session
+### Different actions wd/hub/session/:session_id/**
 Different action requests like: click, isDisplayed, swipe... requests are made for performing actions on mobile devices.
 
 1. User sends correct action request to On-Demand service
