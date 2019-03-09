@@ -43,9 +43,9 @@ Different action requests like: click, isDisplayed, swipe... requests are made f
 Users can use this service as a regular Appium service but when there are more than one device they need to use then there is no need of starting multiple services. On-Demand service will handle everything aroud that. It will start Appium service when POST request comes in and deletes the session on DELETE http request.
 
 ## Roadmap
-* Basic Appium HTTP Handlers - In progress
-* Port manager for Service - Not Started
-* User interface for managing different connected devices - Planned
-* Simulator/Emulator support
-* Easier Simulator/Emulator creation
+* Basic Appium HTTP Handlers :warning:
+* Port manager for Service :warning:
+* User interface for managing different connected devices :warning:
+* Simulator/Emulator support :warning:
+* Easier Simulator/Emulator creation :warning:
 * ...
